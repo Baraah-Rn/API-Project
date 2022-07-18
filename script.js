@@ -1,8 +1,8 @@
 // selection part
 const searchBtn = document.getElementById("search-btn");
+const searchBar = document.getElementById("search-input");
 const cancelBtn = document.getElementById("close-recipe-btn");
 const mealsList = document.getElementById("meal");
-const searchBar = document.getElementById("search-input");
 const mealDetails = document.querySelector(".meal-details-box")
 
 
@@ -17,6 +17,10 @@ function getTheMealList() {
     let searchInput = document.getElementById("search-input").value.trim();
     let url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${searchInput}`;
 
+     if(searchInput.length === 0){
+        let error = "Please Enter a value"
+        handelError(error)
+    }else{
     fetch(url)
         .then((response) => {
             if (!response.ok) {
@@ -48,10 +52,11 @@ function getTheMealList() {
             mealsList.innerHTML = itemsListHTML;
         })
 
-        .catch(error => {
-            handelError()
+        .catch(() => {
+            let error = "OOPS, some thing went wrong."
+            handelError(error)
         });
-
+    }
 }
 
 function getTheRecipe(event) {
@@ -74,7 +79,8 @@ function getTheRecipe(event) {
 
         mealsList.classList.remove("not-found")
     } else {
-        handelError()
+        let error = "OOPS, some thing went wrong."
+        handelError(error)
     }
 }
 
@@ -107,8 +113,11 @@ function pressEnter(event) {
 }
 
 
-function handelError() {
-    let error = "OOPS, some thing went wrong."
+function handelError(message) {
     mealsList.classList.add("not-found");
-    mealsList.innerHTML = error;
+    mealsList.innerHTML = message;
+}
+
+window.onunload = function () {
+	searchBar.value ='';
 }

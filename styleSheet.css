@@ -31,7 +31,9 @@ body{
     margin-bottom: 1rem;
 }
 .meal-search h1{
+    padding: 0.5rem;
     font-size: 3rem;
+    border-radius: 30%;
     background-color: var(--tenne-tawny-dark);
     color: var(--tenne-tawny);
 }
