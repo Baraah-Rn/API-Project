@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-    
+
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
     <link rel="icon" type="image/x-icon" href="./6c33afe04bf6a4f509bbc2568637c676.png">
     <title>Bon Appetit</title>
 
@@ -25,28 +25,42 @@
                 </blockquote>
 
                 <section class="meal-search-box">
-                    <input type="text" class="search-control" placeholder="Enter an ingredient" id="search-input">
-                    <button type="submit" class="search-btn btn" id="search-btn">
+                    <input type="text" class="search-control" placeholder="Search by ingredient or a meal"
+                        id="search-input">
+                    <button type="submit" title="search" class="search-btn btn" id="search-btn">
                         <i class="fas fa-search"></i>
+                    </button>
+
+                    <button type="submit" title="Surprise Me" class="luck-btn search-btn btn" id="luck-btn">
+                        <i class="fa fa-bomb"></i>
                     </button>
                 </section>
             </div>
 
+            <!-- ==================== -->
+            <!-- <div class="fav-list" id="favorite-container">
+                 <img src="" alt="food">
+                    <p>examle</p>
+                
+            </div> -->
+            <!-- ==================== -->
+
+
+
             <div class="meal-result">
-                <h2 class="title">Your Search Results :</h2>
+                <h2 class=" title2">Your Search Results :</h2>
                 <div id="meal">
                     <!-- meal items -->
                 </div>
             </div>
 
             <div class="meal-details">
-                <button type="button" class="btn close-recipe" id="close-recipe-btn"> <i
-                        class="fas fa-times"></i>
+                <button type="button" class="btn close-recipe" id="close-recipe-btn"> <i class="fas fa-times"></i>
                 </button>
 
-                
+
                 <section class="meal-details-box">
-                   <!-- Recipe-box -->
+                    <!-- Recipe-box -->
                 </section>
             </div>
 
