@@ -270,6 +270,21 @@ ul li{
     list-style: none;
 }
 
+.showFavList{
+    display: flex;
+}
+
+.fav-img{
+width: 30%;
+border-radius: 60%;
+}
+.love-btn{
+    background-color: var(--red);
+    color: var(--wight);
+    border-radius: 70%;
+   
+}
+
 
 
 

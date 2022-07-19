@@ -1,35 +1,59 @@
 // selection part
 const searchBtn = document.getElementById("search-btn");
 const searchBar = document.getElementById("search-input");
-const cancelBtn = document.getElementById("close-recipe-btn");
+const closeBtn = document.getElementById("close-recipe-btn");
 const mealsList = document.getElementById("meal");
 const luckBtn = document.getElementById("luck-btn")
 const mealDetails = document.querySelector(".meal-details-box")
-const favoriteLi = document.getElementById("favorite-container")
+const favoriteList = document.getElementById("favorite-container")
+
 
 // event listener part
 searchBtn.addEventListener("click", getTheMealList)
 luckBtn.addEventListener("click", surpriseMe)
-mealsList.addEventListener("click", getTheRecipe)
-cancelBtn.addEventListener("click", closeRecipes)
+closeBtn.addEventListener("click", closeRecipes)
 searchBar.addEventListener("keyup", pressEnter)
+mealsList.addEventListener("click", getTheRecipe)
+
+//Global value to store the favorite List
+let favArray = [];
+closeFavBtn = document.querySelector(".showFavList");
+closeFavBtn.addEventListener("click", favoriteListHandler)
 
 
 
 // functions
+
+//reusable fetch function
+function fetchMealById(id) {
+    let idUrl = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
+    let data = fetch(idUrl)
+        .then((response) => {
+            if (!response.ok) {
+                alert("Error, 404.");
+                throw new Error("There is a response problem ");
+            }
+            return response.json();
+        })
+
+    return data
+
+}
+
+//get the list of the meals based on the ingredient
 function getTheMealList() {
     let searchInput = document.getElementById("search-input").value.trim();
     let url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${searchInput}`;
 
     if (searchInput.length === 0) {
-        let error = "Please type an ingredient or a meal..."
+        let error = "Please type an ingredient..."
         handelError(error)
     } else {
         fetch(url)
             .then((response) => {
                 if (!response.ok) {
-                    alert("No Results found.");
-                    throw new Error("No Results found");
+                    alert("Error, 404.");
+                    throw new Error("There is a response problem ");
                 }
                 return response.json();
             })
@@ -43,9 +67,7 @@ function getTheMealList() {
                     <img src="${meal.strMealThumb}" alt="food">
                 </section>
                 <section class="meal-name">
-                    <h2>${meal.strMeal} <a href="#" type="submit" title="Add to favorite" class=" favorite-btn">
-                    <i class="far fa-heart"></i>
-                </a></h2>
+                    <h2>${meal.strMeal}  <i title="Add to favorite" class="far fa-heart favorite-btn"></i> </h2>
                     <a href="#" class="recipe-btn">Get Recipe</a>
                    
                 </section>
@@ -57,40 +79,52 @@ function getTheMealList() {
                     mealsList.classList.add("not-found")
                 }
                 mealsList.innerHTML = itemsListHTML;
+
             })
 
             .catch(() => {
-                let error = "OOPS, some thing went wrong."
+                let error = "OOPS, some thing went wrong...."
                 handelError(error)
             });
     }
-}
 
+
+}
+//Open the card recipe function 
 function getTheRecipe(event) {
     event.preventDefault();
     if (event.target.classList.contains("recipe-btn")) {
         let items = event.target.parentElement.parentElement
-        let urlDetails = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${items.id}`
-        fetch(urlDetails)
-            .then((response) => {
-                if (!response.ok) {
-                    alert("No Recipe found.");
-                    throw new Error("No Recipefound");
-                }
-                return response.json();
-            })
+        fetchMealById(items.id)
             .then(data => recipeCard(data.meals))
             .catch(error => {
                 handelError()
             });
 
         mealsList.classList.remove("not-found")
-    } else {
-        let error = "OOPS, some thing went wrong."
-        handelError(error)
+
+
+    } //working on Storage
+    else if (event.target.classList.contains("favorite-btn")) {
+        const mealId = event.target.parentElement.parentElement.parentElement.id;
+        let loveButton = event.target
+
+        if (favArray.includes(mealId)) {
+            alert("This meal is already in favorite list.")
+        } else {
+            console.log(loveButton)
+            loveButton.classList.add("love-btn")
+
+            favArray.push(mealId);
+            localStorage.setItem("favorite", favArray)
+            favoriteListFunc(mealId)
+        }
+
+
     }
 }
 
+// Display and manege the Recipe card 
 function recipeCard(meal) {
     meal = meal[0]
     let mealCardHTML = `
@@ -110,6 +144,7 @@ function recipeCard(meal) {
 }
 
 
+//Get random recipe function 
 function surpriseMe() {
     let surpriseUrl = " https://www.themealdb.com/api/json/v1/1/random.php"
     fetch(surpriseUrl)
@@ -122,48 +157,95 @@ function surpriseMe() {
         })
         .then(data => surpriseData(data.meals))
         .catch(error => {
-         error = "Sorry, We think you aren't lucky today."
-        handelError(error)
+            error = "Sorry, We think you aren't lucky today."
+            handelError(error)
         });
-    }
+}
 
+
+//using this func inside surpriseMeFunc to get the Data
 function surpriseData(meal) {
     meal = meal[0];
-
     let surprise = `<div class="meal-item" id="${meal.idMeal}">
  <section class="meal-img">
      <img src="${meal.strMealThumb}" alt="food">
  </section>
  <section class="meal-name">
-     <h2>${meal.strMeal}</h2>
+     <h2>${meal.strMeal}  <i title="Add to favorite" class="far fa-heart favorite-btn"></i></h2>
      <a href="#" class="recipe-btn">Get Recipe</a>
  </section>
 </div>`;
 
     mealsList.innerHTML = surprise;
+    document.querySelector(".recipe-btn").addEventListener("click", getTheRecipe)
+
 }
+
+
+
+// Display the img of the favorite List function
+function favoriteListFunc(id) {
+    fetchMealById(id).then(data => {
+        const meal = data.meals[0];
+        if (meal) {
+            favLi = `<img  class = "fav-img" src="${meal.strMealThumb}" alt="food">
+                <i class="fas fa-times closeFav" id = "${id}"></i>`
+            let ul = document.getElementById("fav-UL");
+            let li = document.createElement("li");
+
+            li.innerHTML = favLi
+            ul.appendChild(li);
+
+
+        }
+    })
+        .catch(() => {
+            let error = "OOPS, some thing went wrong...."
+            handelError(error)
+
+        });
+}
+
+function favoriteListHandler(event) {
+    event.preventDefault();
+    //Delete element from favorite list
+    if (event.target.classList.contains("closeFav")) {
+        const deleteElement = event.target.id
+        document.getElementById(deleteElement).parentElement.remove();
+
+        let deleteFromArray = favArray.indexOf(deleteElement);
+
+        favArray.splice(deleteFromArray)
+
+        //show full recipe when click on the img
+    } else if (event.target.classList.contains("fav-img")) {
+        let id = event.target.parentElement.children[1].id
+        fetchMealById(id)
+            .then(data => recipeCard(data.meals))
+            .catch(error => {
+                handelError()
+            });
+
+    }
+
+}
+
 
 
 
 function closeRecipes() {
     mealDetails.parentElement.classList.remove("showRecipes")
 }
-
 function pressEnter(event) {
     if (event.key == "Enter") {
         getTheMealList()
     }
 }
-
-
 function handelError(message) {
     mealsList.classList.add("not-found");
     mealsList.innerHTML = message;
 }
-
 window.onunload = function () {
-    searchBar.value = ' ';
+    searchBar.value = '';
+
 }
-
-
-
